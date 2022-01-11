@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  gap: 1rem;
+
+  background-image: url('../../../public/assets/background.webp');
+  background-size: cover;
+  background-position: center;
+  background-color: pink;
+  height: 10rem;
+
+  border-radius: 0 0 2rem 2rem;
+}
