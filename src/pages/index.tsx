@@ -1,4 +1,4 @@
-import type { NextPage } from 'next';
+import type { GetStaticProps, NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -16,82 +16,46 @@ type Episode = {
   };
 };
 
-type Seasons = {
+type Season = {
   id: number;
   episodes: Episode[];
 };
 
-const episodes1: Episode[] = [
-  {
-    id: 160178,
-    name: 'Monkey See, Doggie Do / Mommy Fearest',
-    season: 1,
-    number: 1,
-    image: {
-      medium:
-        'https://static.tvmaze.com/uploads/images/medium_landscape/157/393188.jpg',
-    },
-  },
-  {
-    id: 160178,
-    name: 'Monkey See, Doggie Do / Mommy Fearest',
-    season: 1,
-    number: 1,
-    image: {
-      medium:
-        'https://static.tvmaze.com/uploads/images/medium_landscape/157/393188.jpg',
-    },
-  },
-  {
-    id: 160178,
-    name: 'Monkey See, Doggie Do / Mommy Fearest',
-    season: 1,
-    number: 1,
-    image: {
-      medium:
-        'https://static.tvmaze.com/uploads/images/medium_landscape/157/393188.jpg',
-    },
-  },
-];
+interface HomeProps {
+  seasons: Season[];
+}
 
-const seasons: Seasons[] = [
-  {
-    id: 1,
-    episodes: episodes1,
-  },
-  {
-    id: 2,
-    episodes: episodes1,
-  },
-  {
-    id: 3,
-    episodes: episodes1,
-  },
-  {
-    id: 4,
-    episodes: episodes1,
-  },
-  {
-    id: 5,
-    episodes: episodes1,
-  },
-  {
-    id: 6,
-    episodes: episodes1,
-  },
-];
+export const getStaticProps: GetStaticProps<HomeProps> = async () => {
+  // PowerPuff Girls show id: 1955
+  const res = await fetch('https://api.tvmaze.com/shows/1955/episodes');
+  const episodes: Episode[] = await res.json();
 
-const backgroundColors = [
-  '#4ca9e3',
-  '#db8380',
-  '#89bf75',
-  '#E54D0C',
-  '#924B79',
-  '#D2081D',
-];
-// `https://api.tvmaze.com/episodes/${episode.id}`
+  // Transform episodes into an array of Season
+  const seasons = episodes.reduce((acc: Season[], curr: Episode) => {
+    acc[curr.season - 1]
+      ? acc[curr.season - 1].episodes.push(curr)
+      : (acc[curr.season - 1] = { id: curr.season, episodes: [curr] });
 
-const Home: NextPage = () => {
+    return acc;
+  }, []);
+
+  return {
+    props: {
+      seasons,
+    },
+  };
+};
+
+const Home: NextPage<HomeProps> = ({ seasons }) => {
+  const backgroundColors = [
+    '#4ca9e3',
+    '#db8380',
+    '#89bf75',
+    '#E54D0C',
+    '#924B79',
+    '#D2081D',
+  ];
+
   return (
     <div className={styles.container}>
       <Header />
@@ -100,7 +64,7 @@ const Home: NextPage = () => {
         <h2>Episodes</h2>
 
         {seasons.map(({ id, episodes }) => (
-          <>
+          <div key={id} className={styles.seasonsContainer}>
             <h2
               className={styles.banner}
               style={{ background: backgroundColors[id - 1] }}
@@ -110,7 +74,7 @@ const Home: NextPage = () => {
             <div className={styles.episodesContainer}>
               {episodes.map((episode) => (
                 <div key={episode.id} className={styles.episodeContainer}>
-                  <Link href={`episodes/${episode.id}`}>
+                  <Link href={`/episodes/${episode.id}`}>
                     <a className={styles.episode}>
                       <div>
                         <p>
@@ -131,7 +95,7 @@ const Home: NextPage = () => {
                 </div>
               ))}
             </div>
-          </>
+          </div>
         ))}
       </main>
     </div>

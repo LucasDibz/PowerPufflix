@@ -5,15 +5,15 @@ import styles from './styles.module.scss';
 
 export const Header = () => {
   return (
-    <div className={styles.container}>
-      <Image
-        src='/assets/logo.svg'
-        alt='powerpuff girls'
-        width={200}
-        height={200}
-      />
+    <Link href='/'>
+      <a className={styles.container}>
+        <Image
+          src='/assets/logo.svg'
+          alt='powerpuff girls'
+          width={200}
+          height={200}
+        />
 
-      <Link href='/' passHref>
         <Image
           src='/assets/powerpuff-girls.svg'
           alt=''
@@ -21,7 +21,7 @@ export const Header = () => {
           height={180}
         />
         {/* <a>🏠</a> */}
-      </Link>
-    </div>
+      </a>
+    </Link>
   );
 };
